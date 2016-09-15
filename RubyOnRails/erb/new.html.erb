@@ -1,0 +1,46 @@
+<h1 class="dyn-groen">Test</h1>
+<div id="test">
+	<% if @test_result.errors.any? %>
+		<br />
+		<div class="error">Niet alle zijn vragen beantwoord</div>
+	<% end %>
+	<%= form_for @test_result, :html => { :class => 'form-horizontal dyn-schrijfform' } do |f| %>
+		<% 
+			last_part_id = 0 
+			counter = 1
+		%>
+		<%= f.fields_for :test_answers do |a| %>
+			<% if last_part_id != a.object.test_question.test_part.id %>
+				<% last_part_id = a.object.test_question.test_part.id %>
+				<% if last_part_id != 0 %>
+					</fieldset>
+				<% end %>
+				<fieldset>
+					<h2><%= a.object.test_question.test_part.titel %></h2>
+					<p><%= a.object.test_question.test_part.omschrijving %></p>
+			<% end %>
+			<%= a.hidden_field :test_question_id %>
+			<div class="dyn-test <%=cycle('odd', 'even') %>">
+				<div <% if a.object.errors[:answer].present? %>class="error"<% end %>>
+					<div class="dyn-test-question">
+						<%= a.object.test_question.vraag %>
+					</div>
+					<div class="dyn-test-options">
+						<%= a.radio_button :answer, true %> <span class="dyn-label">Ja</span>&nbsp;&nbsp;&nbsp;
+						<%= a.radio_button :answer, false %> <span class="dyn-label">Nee</span>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			</div>
+			<% if counter % 6 == 0 %>
+				<p>&nbsp;</p>
+			<% end %>
+			<% counter += 1 %>
+		<% end %>
+		<div>
+			<br />
+			<%= f.submit 'Verzenden' %>
+			<br /><br />
+		</div>
+	<% end %>
+</div>
